@@ -7,7 +7,7 @@ $defaultReferer = 'https://twitter.com/';
 $pageCount = 4;
 
 // Github kaynak dosyası (ilk ihtimal)
-$sourceUrlRaw = 'https://raw.githubusercontent.com/kerimmkirac/cs-kerim2/main/RecTV/src/main/kotlin/com/kerimmkirac/RecTV.kt';
+$sourceUrlRaw = 'https://raw.githubusercontent.com/kerimmkirac/cs-kerim/refs/heads/master/RecTV/src/main/kotlin/com/keyiflerolsun/RecTV.kt';
 $proxyUrl = 'https://api.codetabs.com/v1/proxy/?quest=' . urlencode($sourceUrlRaw);
 
 // Güncel değerlerin tutulacağı değişkenler
