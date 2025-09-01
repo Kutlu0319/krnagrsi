@@ -1,6 +1,6 @@
 <?php
 // Varsayılanlar (ikinci ihtimal)
-$defaultBaseUrl = 'https://m.prectv55.lol';
+$defaultBaseUrl = 'https://m.prectv55.sbs';
 $defaultSuffix = '4F5A9C3D9A86FA54EACEDDD635185/64f9535b-bd2e-4483-b234-89060b1e631c/';
 $defaultUserAgent = 'Dart/3.7 (dart:io)';
 $defaultReferer = 'https://twitter.com/';
