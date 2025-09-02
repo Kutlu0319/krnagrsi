@@ -1,60 +1,57 @@
-# Bu GitHub Actions iş akışının adı
 name: Generate M3U Lists
 
 on:
-  # Zamanlanmış görev: 12 saatte bir otomatik olarak çalışır
+  # Otomatik çalıştırma: her 12 saatte bir
   schedule:
     - cron: '0 */12 * * *'
-  # Manuel tetikleme: GitHub'ın Actions sekmesinden elle çalıştırılabilir
+  # Manuel tetikleme için
   workflow_dispatch:
 
 jobs:
   build:
-    # Görevin çalışacağı sanal makine
     runs-on: ubuntu-latest
-    
-    # Depoya yazma izni. Bu olmadan 'git push' başarısız olur.
+
     permissions:
-      contents: write
+      contents: write  # Push işlemi için gerekli izin
 
     steps:
-    # 1. Adım: Depodaki kodları sanal makineye indirir
-    - name: Checkout Repository
+    # 1. Depoyu indir
+    - name: Checkout repository
       uses: actions/checkout@v4
 
-    # 2. Adım: Belirtilen PHP sürümünü kurar
+    # 2. PHP 8.2 kur
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
         php-version: '8.2'
 
-    # 3. Adım: Üç PHP betiğini de sırayla çalıştırır
-    - name: Run PHP Generators
-      run: |
-        php canli_tv.php
-        php filmler.php
-        php diziler.php
+    # 3. PHP scriptlerini sırayla çalıştır
+    - name: Run canli_tv.php
+      run: php canli_tv.php
 
-    # 4. Adım: Oluşturulan dosyaları kontrol eder ve değişiklik varsa depoya gönderir
-    - name: Commit & Push if Changes
+    - name: Run filmler.php
+      run: php filmler.php
+
+    - name: Run diziler.php
+      run: php diziler.php
+
+    # 4. Değişiklik varsa commit ve push
+    - name: Commit and push if changed
       run: |
-        # Git işlemleri için bot kullanıcısını yapılandır
         git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
         git config --global user.name "github-actions[bot]"
-        
-        # Oluşturulan M3U dosyalarını 'staging' alanına ekle.
-        # Dosyalardan biri veya hepsi oluşturulmamışsa bu komut hata vermez.
-        git add canli_tv.m3u filmler.m3u diziler.m3u
-        
-        # Değişiklik olup olmadığını kontrol et.
-        # Eğer 'staging' alanında hiçbir değişiklik yoksa (dosyalar aynıysa veya hiç oluşmadıysa),
-        # komut sessizce başarılı olur ve sonraki adıma geçmez.
-        if git diff --staged --quiet; then
-          echo "Mevcut M3U listelerinde değişiklik bulunamadı. Commit atılmayacak."
+
+        # Dosyalar varsa ekle
+        [ -f canli_tv.m3u ] && git add canli_tv.m3u
+        [ -f filmler.m3u ] && git add filmler.m3u
+        [ -f diziler.m3u ] && git add diziler.m3u
+
+        # Değişiklik varsa commit et
+        if git diff --cached --quiet; then
+          echo "Mevcut M3U listelerinde değişiklik yok, commit atılmayacak."
           exit 0
         fi
-        
-        # Eğer değişiklik varsa, commit at ve ana dala (main/master) push'la.
-        echo "Değişiklikler bulundu, depoya gönderiliyor..."
+
+        echo "Yeni M3U listeleri bulundu, commit atılıyor..."
         git commit -m "Update M3U lists [skip ci]"
         git push
